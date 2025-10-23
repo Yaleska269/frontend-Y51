@@ -10,6 +10,7 @@ import Encabezado from "./components/Navegacion/Encabezado";
 import Login from "./Views/Login";
 import Inicio from "./Views/Inicio";
 import Categorias from "./Views/Categorias";
+import Compras from "./Views/Compras";
 import Productos from "./Views/Productos";
 import Catalogo from "./Views/Catalogo";
 import Clientes from './Views/Clientes';
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/" element={<Inicio />} />
           <Route path="/login" element={<Login />} />
           <Route path="/categorias" element={<Categorias />} />
+          <Route path="/compras" element={<Compras/>} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/clientes" element={<Clientes />} />
