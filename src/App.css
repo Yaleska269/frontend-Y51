@@ -3,6 +3,16 @@
     padding: 20px;
 }
 
-.texto-marca {
-    color:deeppink
+.barbie {
+    background-color: rgb(247, 120, 141);
+}
+
+.color-boton-registro {
+    background-color: rgb(247, 120, 141);
+    border-color:black; 
+}
+
+.color-boton-registro:hover{
+    background-color: rgb(237, 54, 179);
+    border-color:rgb(237, 54, 179); 
 }

@@ -4,7 +4,7 @@ const Inicio = () => {
     
     return (
         <>
-            <h2>Pagina de Inicio</h2> 
+            <h2>Pagina de Inicio Bienvenid@</h2> 
         </>
     );
 }

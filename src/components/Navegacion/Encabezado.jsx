@@ -17,7 +17,7 @@ const Encabezado = () => {
     };
 
     return (
-        <Navbar expand="md" fixed="top" className="bg-dark">
+        <Navbar expand="md" fixed="top" className="barbie">
             <Container>
                 <Navbar.Brand
                     onClick={() => manejarNavegacion("/inicio")}
@@ -60,6 +60,8 @@ const Encabezado = () => {
                             >
                                 Productos
                                 </Nav.Link>
+
+                                
 
                             <Nav.Link 
                             onClick={() => manejarNavegacion("/compras")}
