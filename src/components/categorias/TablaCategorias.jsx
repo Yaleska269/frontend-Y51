@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Spinner, Table, Button } from "react-bootstrap";
 import BotonOrden from "../ordenamiento/BotonOrden";
+import Paginacion from "../ordenamiento/Paginacion";
 
-const TablaCategorias = ({ categorias, cargando, abrirModalEdicion, abrirModalEliminacion}) => {
+const TablaCategorias = ({ categorias, cargando, abrirModalEdicion, abrirModalEliminacion, totalElementos, elementosPorPagina, paginaActual, establecerPaginaActual}) => {
 
 
     const [orden, setOrden] = useState({ campo: "id_categoria", direccion: "asc" });
@@ -15,6 +16,7 @@ const TablaCategorias = ({ categorias, cargando, abrirModalEdicion, abrirModalEl
         }));
     };
 
+
     const categoriasOrdenadas = [...categorias].sort((a, b) => {
         const valorA = a[orden.campo];
         const valorB = b[orden.campo];
@@ -26,6 +28,7 @@ const TablaCategorias = ({ categorias, cargando, abrirModalEdicion, abrirModalEl
         const comparacion = String(valorA).localeCompare(String(valorB));
         return orden.direccion === "asc" ? comparacion : -comparacion;
     });
+
 
     
 
@@ -92,6 +95,12 @@ const TablaCategorias = ({ categorias, cargando, abrirModalEdicion, abrirModalEl
                     })}
                 </tbody>
             </Table>
+            <Paginacion
+                    elementosPorPagina={elementosPorPagina}
+                    totalElementos={totalElementos}
+                    paginaActual={paginaActual}
+                    establecerPaginaActual={establecerPaginaActual}
+                />
         </>
     );
 }
