@@ -8,14 +8,14 @@ const ModalRegistroUsuario = ({
     agregarUsuario,  
 }) => {
     return (
-        <Modal backdrop="static"show={mostrarModal} onHide={() => setMostrarModal(false)} centered>
+        <Modal backdrop="static" show={mostrarModal} onHide={() => setMostrarModal(false)} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Agregar Nuevo Usuario</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group className="mb-3" controlId="usuario">
-                        <Form.Label>Nombre de la Usuario</Form.Label>
+                        <Form.Label>Nombre de Usuario</Form.Label>
                         <Form.Control
                             type="text"
                             name="usuario"
@@ -36,6 +36,7 @@ const ModalRegistroUsuario = ({
                             onChange={manejarCambioInput}
                             placeholder="Ingrese la contraseña (máx. 8 caracteres)"
                             maxLength={8}
+                            required
                         />
                     </Form.Group>
                 </Form>
@@ -47,7 +48,7 @@ const ModalRegistroUsuario = ({
                 <Button
                     variant="primary"
                     onClick={agregarUsuario}
-                    disabled={!nuevoUsuario.usuario.trim()}
+                    disabled={!nuevoUsuario.usuario.trim() || !nuevoUsuario.contraseña.trim()}
                 >
                     Guardar Usuario
                 </Button>

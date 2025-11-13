@@ -42,40 +42,66 @@ const ModalRegistroProducto = ({
                     <Form.Group className="mb-3" controlId="idCategoria">
                         <Form.Label>Id Categoria</Form.Label>
                         <Form.Control
-                            type="text"
+                            type="number"
                             name="id_categoria"
                             value={nuevoProducto.id_categoria}
                             onChange={manejarCambioInput}
-                            placeholder="ID (máx. 50 caracteres)"
-                            maxLength={50}
+                            placeholder="Ingrese el ID de la categoría"
+                            min={1}
                         />
                     </Form.Group>
 
 
-                    
+
                     <Form.Group className="mb-3" controlId="precioUnitario">
                         <Form.Label>precio Unitario</Form.Label>
                         <Form.Control
-                            type="text"
+                            type="number"
                             name="precio_unitario"
                             value={nuevoProducto.precio_unitario}
                             onChange={manejarCambioInput}
                             placeholder="Precio del producto"
-                            maxLength={40}
+                            step="0.01"
+                            min={0}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="stock">
                         <Form.Label>Stock</Form.Label>
                         <Form.Control
-                            type="text"
-                            name="stock "
-                            value={nuevoProducto.precio_unitario}
+                            type="number"
+                            name="stock"
+                            value={nuevoProducto.stock}
                             onChange={manejarCambioInput}
-                            placeholder=" stock "
-                            maxLength={40}
+                            placeholder="Stock disponible"
+                            min={0}
                         />
                     </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="formImagenProducto">
+                        <Form.Label>Imagen</Form.Label>
+                        <Form.Control
+                            type="file"
+                            name="imagen"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                        manejarCambioInput({
+                                            target: {
+                                                name: "imagen",
+                                                value: reader.result.split(",")[1],
+                                            }, // Extrae solo la parte Base64
+                                        });
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                        />
+                    </Form.Group>
+
 
 
                 </Form>

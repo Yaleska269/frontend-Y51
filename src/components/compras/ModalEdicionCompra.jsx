@@ -1,48 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Form, Button, Table, Row, Col, FormControl } from "react-bootstrap";
 import AsyncSelect from 'react-select/async';
 
-const ModalRegistroVenta = ({
-    mostrar, setMostrar, nuevaVenta, setNuevaVenta,
-    detalles, setDetalles, clientes, empleados, productos,
-    agregarVenta, hoy
-}) => {
-    const [clienteSel, setClienteSel] = useState(null);
-    const [empleadoSel, setEmpleadoSel] = useState(null);
+const ModalEdicionCompra = ({ mostrar, setMostrar, compra, compraEnEdicion, setCompraEnEdicion, detalles, setDetalles, actualizarCompra, productos, empleados, hoy }) => {
     const [productoSel, setProductoSel] = useState(null);
+    const [empleadoSel, setEmpleadoSel] = useState(null);
     const [nuevoDetalle, setNuevoDetalle] = useState({ id_producto: '', cantidad: '' });
 
-    const total = detalles.reduce((s, d) => s + (d.cantidad * d.precio_unitario), 0);
+    useEffect(() => {
+        // cuando se abre, preconfigurar si existe compra
+        if (compra && empleados.length > 0) {
+            const empleado = empleados.find(e => e.id_empleado === compraEnEdicion.id_empleado);
+            setEmpleadoSel(empleado ? { value: empleado.id_empleado, label: ` ${empleado.primer_nombre} ${empleado.primer_apellido}` } : null);
+        }
+    }, [compra, compraEnEdicion, empleados]);
 
+    // cargar opciones para AsyncSelect
     const cargarOpciones = (lista, campo) => (input, callback) => {
-        const filtrados = lista.filter(item =>
-            item[campo].toLowerCase().includes(input.toLowerCase())
-        );
+        const filtrados = lista.filter(item => {
+            const valor = campo === 'nombre_producto' ? item.nombre_producto : `${item.primer_nombre} ${item.primer_apellido}`;
+            return String(valor).toLowerCase().includes(String(input).toLowerCase());
+        });
         callback(filtrados.map(item => ({
-            value: item.id_cliente || item.id_empleado || item.id_producto,
-            label: item[campo] || `${item.primer_nombre} ${item.primer_apellido}`,
+            value: item.id_producto || item.id_empleado,
+            label: campo === 'nombre_producto' ? item.nombre_producto : `${item.primer_nombre} ${item.primer_apellido}`,
             precio: item.precio_unitario,
             stock: item.stock
         })));
     };
 
-    const manejarCliente = (sel) => {
-        setClienteSel(sel);
-        setNuevaVenta(prev => ({ ...prev, id_cliente: sel ? sel.value : '' }));
-    };
-
     const manejarEmpleado = (sel) => {
         setEmpleadoSel(sel);
-        setNuevaVenta(prev => ({ ...prev, id_empleado: sel ? sel.value : '' }));
+        setCompraEnEdicion(prev => ({ ...prev, id_empleado: sel ? sel.value : '' }));
     };
 
     const manejarProducto = (sel) => {
         setProductoSel(sel);
-        setNuevoDetalle(prev => ({
-            ...prev,
-            id_producto: sel ? sel.value : '',
-            precio_unitario: sel ? sel.precio : ''
-        }));
+        setNuevoDetalle(prev => ({ ...prev, id_producto: sel ? sel.value : '', precio_unitario: sel ? sel.precio : 0 }));
     };
 
     const agregarDetalle = () => {
@@ -52,6 +46,7 @@ const ModalRegistroVenta = ({
         }
 
         const prod = productos.find(p => p.id_producto === parseInt(nuevoDetalle.id_producto));
+        if (!prod) return;
         if (nuevoDetalle.cantidad > prod.stock) {
             alert(`Stock insuficiente: ${prod.stock}`);
             return;
@@ -70,28 +65,16 @@ const ModalRegistroVenta = ({
 
     return (
         <Modal backdrop="static" show={mostrar} onHide={setMostrar} size="xl" fullscreen="lg-down">
-            <Modal.Header closeButton><Modal.Title>Nueva Venta</Modal.Title></Modal.Header>
+            <Modal.Header closeButton><Modal.Title>Editar Compra</Modal.Title></Modal.Header>
             <Modal.Body>
                 <Form>
                     <Row>
-                        <Col md={4}>
-                            <Form.Group>
-                                <Form.Label>Cliente</Form.Label>
-                                <AsyncSelect
-                                    cacheOptions defaultOptions
-                                    loadOptions={cargarOpciones(clientes, 'primer_nombre')}
-                                    onChange={manejarCliente}
-                                    value={clienteSel}
-                                    placeholder="Buscar cliente..."
-                                    isClearable
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
+                        <Col md={6}>
                             <Form.Group>
                                 <Form.Label>Empleado</Form.Label>
                                 <AsyncSelect
-                                    cacheOptions defaultOptions
+                                    cacheOptions
+                                    defaultOptions
                                     loadOptions={cargarOpciones(empleados, 'primer_nombre')}
                                     onChange={manejarEmpleado}
                                     value={empleadoSel}
@@ -103,13 +86,7 @@ const ModalRegistroVenta = ({
                         <Col md={4}>
                             <Form.Group>
                                 <Form.Label>Fecha</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={nuevaVenta.fecha_venta}
-                                    onChange={e => setNuevaVenta(prev => ({ ...prev, fecha_venta: e.target.value }))}
-                                    disabled
-                                    max={hoy}
-                                />
+                                <Form.Control type="date" value={compraEnEdicion?.fecha_compra || ''} onChange={e => setCompraEnEdicion(prev => ({ ...prev, fecha_compra: e.target.value }))} max={hoy} />
                             </Form.Group>
                         </Col>
                     </Row>
@@ -119,7 +96,8 @@ const ModalRegistroVenta = ({
                     <Row>
                         <Col md={5}>
                             <AsyncSelect
-                                cacheOptions defaultOptions
+                                cacheOptions
+                                defaultOptions
                                 loadOptions={cargarOpciones(productos, 'nombre_producto')}
                                 onChange={manejarProducto}
                                 value={productoSel}
@@ -128,18 +106,10 @@ const ModalRegistroVenta = ({
                             />
                         </Col>
                         <Col md={3}>
-                            <FormControl
-                                type="number"
-                                placeholder="Cantidad"
-                                value={nuevoDetalle.cantidad}
-                                onChange={e => setNuevoDetalle(prev => ({ ...prev, cantidad: e.target.value }))}
-                                min="1"
-                            />
+                            <FormControl type="number" placeholder="Cantidad" value={nuevoDetalle.cantidad} onChange={e => setNuevoDetalle(prev => ({ ...prev, cantidad: e.target.value }))} min="1" />
                         </Col>
                         <Col md={4}>
-                            <Button variant="success" onClick={agregarDetalle} style={{ width: '100%' }}>
-                                Agregar
-                            </Button>
+                            <Button variant="success" onClick={agregarDetalle} style={{ width: '100%' }}>Agregar</Button>
                         </Col>
                     </Row>
 
@@ -153,18 +123,14 @@ const ModalRegistroVenta = ({
                                         <td>{d.cantidad}</td>
                                         <td>C$ {d.precio_unitario.toFixed(2)}</td>
                                         <td>C$ {(d.cantidad * d.precio_unitario).toFixed(2)}</td>
-                                        <td>
-                                            <Button size="sm" variant="danger" onClick={() => setDetalles(prev => prev.filter((_, idx) => idx !== i))}>
-                                                X
-                                            </Button>
-                                        </td>
+                                        <td><Button size="sm" variant="danger" onClick={() => setDetalles(prev => prev.filter((_, idx) => idx !== i))}>X</Button></td>
                                     </tr>
                                 ))}
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colSpan={3} className="text-end"><strong>Total:</strong></td>
-                                    <td colSpan={2}><strong>C$ {total.toFixed(2)}</strong></td>
+                                    <td colSpan={2}><strong>C$ {detalles.reduce((s, d) => s + (d.cantidad * d.precio_unitario), 0).toFixed(2)}</strong></td>
                                 </tr>
                             </tfoot>
                         </Table>
@@ -173,10 +139,10 @@ const ModalRegistroVenta = ({
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={setMostrar}>Cancelar</Button>
-                <Button variant="primary" onClick={agregarVenta}>Guardar Venta</Button>
+                <Button variant="primary" onClick={actualizarCompra}>Guardar Cambios</Button>
             </Modal.Footer>
         </Modal>
     );
 };
 
-export default ModalRegistroVenta;
+export default ModalEdicionCompra;

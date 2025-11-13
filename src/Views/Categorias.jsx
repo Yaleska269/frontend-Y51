@@ -7,8 +7,6 @@ import ModalEdicionCategoria from '../components/categorias/ModalEdicionCategori
 import ModalEliminacionCategoria from '../components/categorias/ModalEliminacionCategoria';
 
 
-
-
 const Categorias = () => {
 
     const [categorias, setCategorias] = useState([]);
@@ -171,17 +169,17 @@ const categoriasPaginadas = categoriasFiltradas.slice(
                     </Button>
                 </Col>
 
-
-                <TablaCategorias
-                    categorias={categoriasPaginadas}
-                    cargando={cargando}
-                    abrirModalEdicion={abrirModalEdicion}
-                    abrirModalEliminacion={abrirModalEliminacion}
-                    totalElementos={categorias.length} // Total de categorias
-                    elementosPorPagina={elementosPorPagina} // Elementos por página
-                    paginaActual={paginaActual} // Página actual
-                    establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
-                />
+                
+                    <TablaCategorias
+                        categorias={categoriasPaginadas}
+                        cargando={cargando}
+                        abrirModalEdicion={abrirModalEdicion}
+                        abrirModalEliminacion={abrirModalEliminacion}
+                        totalElementos={categorias.length} // Total de categorias
+                        elementosPorPagina={elementosPorPagina} // Elementos por página
+                        paginaActual={paginaActual} // Página actual
+                        establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
+                    />
 
 
                 <ModalRegistroCategoria
