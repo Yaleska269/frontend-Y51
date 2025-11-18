@@ -108,8 +108,8 @@ const ModalRegistroCliente = ({
                                     name="cedula"
                                     value={nuevoCliente.cedula}
                                     onChange={manejarCambioInput}
-                                    maxLength={10}
-                                    placeholder="1-111-1111"
+                                    maxLength={16}
+                                    placeholder="1-111-1111-000c"
                                 />
                             </Form.Group>
                         </Col>
