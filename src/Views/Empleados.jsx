@@ -105,7 +105,7 @@ const Empleados = () => {
         if (!empleadoEditado.primer_nombre.trim() || !empleadoEditado.primer_apellido.trim()) return;
         try {
             const respuesta = await fetch(`http://localhost:3000/api/actualizarempleado/${empleadoEditado.id_empleado}`, {
-                method: 'P',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(empleadoEditado)
             });
@@ -115,6 +115,8 @@ const Empleados = () => {
         } catch (error) {
             console.error("Error al editar empleado:", error);
             alert("No se pudo actualizar el empleado.");
+
+
         }
     };
 

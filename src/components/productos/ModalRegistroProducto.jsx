@@ -1,4 +1,4 @@
-import { Modal, Form, Button } from "react-bootstrap";
+import { Modal, Form, Button, Row, Col } from "react-bootstrap";
 
 const ModalRegistroProducto = ({
     mostrarModal,
@@ -8,73 +8,83 @@ const ModalRegistroProducto = ({
     agregarProducto,
 }) => {
     return (
-        <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} centered>
+        <Modal
+            backdrop="static"
+            show={mostrarModal}
+            onHide={() => setMostrarModal(false)}
+            centered
+        >
             <Modal.Header closeButton>
                 <Modal.Title>Agregar Nuevo Producto</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group className="mb-3" controlId="nombreProducto">
-                        <Form.Label>Nombre del producto</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="nombre_producto"
-                            value={nuevoProducto.nombre_producto}
-                            onChange={manejarCambioInput}
-                            placeholder="Ingrese el producto"
-                            maxLength={100}
-                            required
-                        />
-                    </Form.Group>
+                    <Row>
+                        <Col md={6} className="mb-3">
+                            <Form.Group controlId="nombre_producto">
+                                <Form.Label>Nombre del Producto</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="nombre_producto"
+                                    value={nuevoProducto?.nombre_producto ?? ""}
+                                    onChange={manejarCambioInput}
+                                    placeholder="Ej: Taladro"
+                                    maxLength={100}
+                                    required
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6} className="mb-3">
+                            <Form.Group controlId="id_categoria">
+                                <Form.Label>ID Categoría</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="id_categoria"
+                                    value={nuevoProducto?.id_categoria ?? ""}
+                                    onChange={manejarCambioInput}
+                                    placeholder="ID de la categoría"
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Form.Group className="mb-3" controlId="descripcionProducto">
-                        <Form.Label>Descripción del producto</Form.Label>
+                    <Row>
+                        <Col md={6} className="mb-3">
+                            <Form.Group controlId="precio_unitario">
+                                <Form.Label>Precio Unitario</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    name="precio_unitario"
+                                    value={nuevoProducto?.precio_unitario ?? ""}
+                                    onChange={manejarCambioInput}
+                                    placeholder="0.00"
+                                    step="0.01"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6} className="mb-3">
+                            <Form.Group controlId="stock">
+                                <Form.Label>Stock</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    name="stock"
+                                    value={nuevoProducto?.stock ?? ""}
+                                    onChange={manejarCambioInput}
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    <Form.Group className="mb-3" controlId="descripcion_producto">
+                        <Form.Label>Descripción</Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={3}
                             name="descripcion_producto"
-                            value={nuevoProducto.descripcion_producto}
+                            value={nuevoProducto?.descripcion_producto ?? ""}
                             onChange={manejarCambioInput}
-                            placeholder="Descripción opcional (máx. 100 caracteres)"
-                            maxLength={100}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="idCategoria">
-                        <Form.Label>Id Categoria</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="id_categoria"
-                            value={nuevoProducto.id_categoria}
-                            onChange={manejarCambioInput}
-                            placeholder="Ingrese el ID de la categoría"
-                            min={1}
-                        />
-                    </Form.Group>
-
-
-
-                    <Form.Group className="mb-3" controlId="precioUnitario">
-                        <Form.Label>precio Unitario</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="precio_unitario"
-                            value={nuevoProducto.precio_unitario}
-                            onChange={manejarCambioInput}
-                            placeholder="Precio del producto"
-                            step="0.01"
-                            min={0}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="stock">
-                        <Form.Label>Stock</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="stock"
-                            value={nuevoProducto.stock}
-                            onChange={manejarCambioInput}
-                            placeholder="Stock disponible"
-                            min={0}
+                            placeholder="Descripción opcional (máx. 300 caracteres)"
+                            maxLength={300}
                         />
                     </Form.Group>
 
@@ -101,9 +111,6 @@ const ModalRegistroProducto = ({
                             }}
                         />
                     </Form.Group>
-
-
-
                 </Form>
             </Modal.Body>
             <Modal.Footer>
@@ -113,7 +120,7 @@ const ModalRegistroProducto = ({
                 <Button
                     variant="primary"
                     onClick={agregarProducto}
-                    disabled={!nuevoProducto.nombre_producto.trim()}
+                    disabled={!nuevoProducto.nombre_producto?.trim()}
                 >
                     Guardar Producto
                 </Button>

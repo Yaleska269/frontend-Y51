@@ -1,9 +1,15 @@
 import { Table, Button, Pagination } from 'react-bootstrap';
 
 const TablaVentas = ({
-    ventas, cargando, obtenerDetalles, abrirModalEdicion,
-    abrirModalEliminacion, totalElementos, elementosPorPagina,
-    paginaActual, establecerPaginaActual
+    ventas,
+    cargando, 
+    obtenerDetalles, 
+    abrirModalEdicion,
+    abrirModalEliminacion, 
+    totalElementos, 
+    elementosPorPagina,
+    paginaActual, 
+    establecerPaginaActual
 }) => {
     if (cargando) return <div className="text-center">Cargando ventas...</div>;
 

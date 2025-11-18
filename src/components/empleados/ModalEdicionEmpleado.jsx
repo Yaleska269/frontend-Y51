@@ -11,6 +11,9 @@ const ModalEdicionEmpleado = ({
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         setEmpleadoEditado((prev) => ({ ...prev, [name]: value }));
+
+        const hoy = new Date().toISOString().split("T")[0];
+
     };
 
     return (
@@ -104,18 +107,15 @@ const ModalEdicionEmpleado = ({
                     </Row>
 
                     <Form.Group className="mb-3" controlId="fecha_contratacion">
-                        <Form.Label>Fecha de Contratación *</Form.Label>
+                        <Form.Label>Fecha de Contratación </Form.Label>
                         <Form.Control
                             type="date"
                             name="fecha_contratacion"
-                            value={
-                                empleadoEditado?.fecha_contratacion
-                                    ? new Date(empleadoEditado.fecha_contratacion).toISOString().split("T")[0]
-                                    : ""
-                            }
-                            onChange={manejarCambio}
-                            required
+                            value={new Date().toISOString().split("T")[0]}
+                            disabled
                         />
+
+                        
                     </Form.Group>
 
                 </Form>

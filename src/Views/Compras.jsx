@@ -4,6 +4,7 @@ import TablaCompras from "../components/compras/TablaCompras";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import ModalRegistroCompra from "../components/compras/ModalRegistroCompra";
 import ModalEdicionCompra from "../components/compras/ModalEdicionCompra";
+import ModalDetallesCompra from "../components/detalles_compras/ModalDetallesCompra";
 import ModalEliminacionCompra from "../components/compras/ModalEliminacionCompra";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -36,6 +37,62 @@ const Compras = () => {
     const [productos, setProductos] = useState([]);
     const [empleados, setEmpleados] = useState([]);
 
+    const generarPDFCompras = () => {
+        const doc = new jsPDF();
+        // Encabezado del PDF
+        doc.setFillColor(28, 41, 51);
+        doc.rect(0, 0, 220, 30, 'F');
+        // Texto centrado en blanco
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(28);
+        doc.text("Lista de Compras", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+        const columnas = ["ID", "Empleado", "Fecha", "Total"];
+        const filas = comprasFiltradas.map(compra => [
+            compra.id_compra,
+            compra.id_empleado,
+            compra.fecha_compra,
+        `${ compra.total_compra }`,
+        ]);
+        const totalPaginas = "{total_pages_count_string}";
+        autoTable(doc, {
+            head: [columnas],
+            body: filas,
+            startY: 40,
+            theme: "grid",
+            styles: { fontSize: 10, cellPadding: 2 },
+            margin: { top: 20, left: 14, right: 14 },
+            tableWidth: 'auto',
+            columnStyles: {
+                0: { cellWidth: 'auto' },
+                1: { cellWidth: 'auto' },
+                2: { cellWidth: 'auto' },
+            },
+            pageBreak: 'auto',
+            rowPageBreak: 'auto',
+            didDrawPage: function (data) {
+                const alturaPagina = doc.internal.pageSize.getHeight();
+                const anchoPagina = doc.internal.pageSize.getWidth();
+                const numeroPagina = doc.internal.getNumberOfPages();
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                const piePagina = `Página ${numeroPagina} de ${totalPaginas}`;
+                doc.text(`Página ${numeroPagina} de ${totalPaginas}`, anchoPagina / 2, alturaPagina - 10, { align: "center" });
+
+            },
+        });
+        //Actulizar el total de páginas
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPaginas);
+        }
+        // Guardar el PDF con nombre y fecha actual
+        const fecha = new Date();
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const anio = fecha.getFullYear();
+        const nombreArchivo = `compras_${ dia }${ mes }${ anio }.pdf`;
+
+        doc.save(nombreArchivo);
+    };
 
     const obtenerCompras = async () => {
         try {
@@ -142,7 +199,7 @@ const Compras = () => {
     // === DETALLES ===
     const obtenerDetallesCompra = async (id_compra) => {
         try {
-            const resp = await fetch('http://localhost:3000/api/Detalles_compras');
+            const resp = await fetch('http://localhost:3000/api/detalles_compras');
             if (!resp.ok) throw new Error('Error al cargar detalles');
             const todos = await resp.json();
             const filtrados = todos.filter(d => d.id_compra === parseInt(id_compra));
@@ -197,7 +254,7 @@ const Compras = () => {
     const actualizarCompra = async () => {
         const total = detallesNuevos.reduce((sum, d) => sum + (d.cantidad * d.precio_unitario), 0);
         try {
-            await fetch(`http://localhost:3000/api/actualizarCompraPatch/${compraEnEdicion.id_compra}`, {
+            await fetch(`http://localhost:3000/api/actualizarcompra/${compraEnEdicion.id_compra}`, {
                 method: 'PATCH', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...compraEnEdicion, total_compra: total })
             });
@@ -206,7 +263,7 @@ const Compras = () => {
             const todos = await resp.json();
             const actuales = todos.filter(d => d.id_compra === compraEnEdicion.id_compra);
             for (const d of actuales) {
-                await fetch(`http://localhost:3000/api/eliminardetalle_compra/${d.id_detalle_compra}`, { method: 'DELETE' });
+                await fetch(`http://localhost:3000/api/eliminardetalles_compras/${d.id_detalle_compra}`, { method: 'DELETE' });
             }
 
             for (const d of detallesNuevos) {
@@ -242,7 +299,6 @@ const Compras = () => {
             alert('No se pudo eliminar.');
         }
     };
-
     return (
         <>
             <Container className="mt-4">
@@ -258,6 +314,18 @@ const Compras = () => {
                         <Button className="color-boton-registro" onClick={() => setMostrarModalRegistro(true)}>+ Nueva Compra</Button>
                     </Col>
                 </Row>
+
+                <Col lg={3} md={4} sm={4} xs={5}>
+                <Button
+                    className="mb-3"
+                    onClick={generarPDFCompras}
+                    variant="secondary"
+                    style={{ width: "100%" }}
+                >
+                    Generar reporte PDF
+                </Button>
+            </Col>
+            
                 <Fade cascade triggerOnce delay={10} duration={600}>
                     <TablaCompras
                         compras={comprasPaginadas}
@@ -312,6 +380,7 @@ const Compras = () => {
                     confirmarEliminacion={eliminarCompra}
                 />
             </Container>
+            
         </>
     );
 };
